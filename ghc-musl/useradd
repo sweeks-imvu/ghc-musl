@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+ln -s "$7" /home/"$8"
+echo adduser -H -D -u "$3" -G "$8" "$8"
+exec adduser -H -D -u "$3" -G "$8" "$8"
