@@ -60,7 +60,7 @@ RUN : "Layer 3: install stack" && \
 
 WORKDIR /
 RUN : "Layer 4: install extra packages" && \
-    apk add mariadb-dev
+    apk add mariadb-dev postgresql-dev
 COPY stack.yaml /root/.stack/global/stack.yaml
 WORKDIR /
 ENTRYPOINT ["/entrypoint.sh"]
