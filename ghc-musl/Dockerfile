@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ENV GHC_VERSION      7.10.2
 ENV PATCHELF_VERSION 0.8
-ENV CABAL_VERSION    1.22.6.0
+ENV CABAL_VERSION    1.22.9.0
 
 WORKDIR /tmp
 COPY get-last-layer.sh build.mk ./
@@ -46,8 +46,12 @@ RUN : "Layer 2: cabal-install, but only the binary, no executables" && \
     : Clean up to keep the image small && \
     rm -rf /tmp/* /root/.ghc /root/.cabal/{lib,share}
 
+COPY groupadd /usr/sbin/groupadd
+COPY useradd /usr/sbin/useradd
+
 WORKDIR /root/.cabal
 RUN : "Layer 3: install stack" && \
+    apk --update add sqlite-dev && \
     cabal update && \
     cabal install --global stack && \
     stack setup && \
@@ -60,7 +64,5 @@ RUN : "Layer 4: install extra packages" && \
 COPY stack.yaml /root/.stack/global/stack.yaml
 WORKDIR /
 RUN : "Layer 5: install extra stack packages" && \
-    stack install aeson aeson-pretty alex appar async attoparsec attoparsec-binary attoparsec-conduit auto-update base64-bytestring base-orphans blaze-builder blaze-html blaze-svg blaze-textual BoundedChan bytestring case-insensitive cereal clock colour conduit conduit-combinators conduit-extra containers criterion cryptonite data-default deepseq deepseq-generics directory either exceptions fast-logger filepath free happy hashable haskell-lexer haskell-src haskell-src-exts haskell-src-meta hex hslogger HsOpenSSL HTTP http-client http-client-tls http-conduit http-streams http-types HUnit quickcheck-instances interpolatedstring-perl6 language-haskell-extract lens lens-aeson lifted-async lifted-base monad-control monad-logger mono-traversable mtl network optparse-applicative parallel parsec parsers path-pieces pcre-heavy pcre-light persistent pipes pipes-bytestring primitive process profunctors QuickCheck random regex-base regex-compat regex-pcre regex-pcre-builtin regex-posix resourcet retry safe semigroupoids semigroups split stm stm-chans syb tagged tasty tasty-hunit tasty-quickcheck tasty-th test-framework test-framework-hunit test-framework-quickcheck2 test-framework-th text time timezone-olson timezone-series transformers transformers-base uniplate unix unordered-containers vector vector-algorithms vector-instances vector-th-unbox wai wai-extra warp yesod yesod-core yesod-static
-COPY entrypoint.sh ./
-ENTRYPOINT ["/entrypoint.sh"]
+    stack install aeson
 CMD ["bash"]

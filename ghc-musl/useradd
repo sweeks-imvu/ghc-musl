@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# -oN --uid $3uid --gid $5gid --home $7homedir $8username
+
+ln -s "$7" /home/"$8"
+echo adduser -H -D -u "$3" -G "$8" "$8"
+exec adduser -H -D -u "$3" -G "$8" "$8"

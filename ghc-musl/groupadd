@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# -o --gid $3gid $4name
+
+if ! getent group "$3"; then
+    exec addgroup -g "$3" "$4"
+fi
