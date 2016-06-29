@@ -1,4 +1,4 @@
-FROM alpine:3.3
+FROM alpine:latest
 
 ENV GHC_VERSION      7.10.3
 ENV GHC_VERSION_S      7.10.3b
@@ -6,7 +6,7 @@ ENV PATCHELF_VERSION 0.8
 ENV CABAL_VERSION    1.22.9.0
 
 WORKDIR /tmp
-COPY get-last-layer.sh build.mk ./
+COPY get-last-layer.sh build.mk ghc-linker-relocation.patch ./
 RUN : "Layer 1: fully working basic GHC in /usr/local" && \
     apk --update add curl xz alpine-sdk perl gmp-dev file gmp openssh openssl zlib-dev strace vim less jq ncurses-dev bash autoconf pcre-dev && \
     : Install patchelf && \
@@ -22,6 +22,7 @@ RUN : "Layer 1: fully working basic GHC in /usr/local" && \
     curl -L https://downloads.haskell.org/~ghc/$GHC_VERSION/ghc-$GHC_VERSION_S-src.tar.bz2 | tar xj && \
     cd ghc-$GHC_VERSION && \
     cp -v /tmp/build.mk mk/build.mk && \
+    patch -p1 < /tmp/ghc-linker-relocation.patch && \
     PATH=/opt/ghc-cross/bin:$PATH ./configure && \
     : patch libffi bug && \
     sed -i 's,chmod,sed -i s/__gnu_linux__/1/ libffi/build/src/closures.c \&\& chmod,' libffi/ghc.mk && \
@@ -37,6 +38,7 @@ RUN : "Layer 1: fully working basic GHC in /usr/local" && \
     make install && \
     : Clean up to keep the image small && \
     rm -rf /tmp/*
+
 
 ENV PATH=/root/.cabal/bin:$PATH
 RUN : "Layer 2: cabal-install, but only the binary, no executables" && \
