@@ -1,6 +1,7 @@
-FROM alpine:latest
+FROM alpine:3.3
 
-ENV GHC_VERSION      7.10.2
+ENV GHC_VERSION      7.10.3
+ENV GHC_VERSION_S      7.10.3b
 ENV PATCHELF_VERSION 0.8
 ENV CABAL_VERSION    1.22.9.0
 
@@ -18,7 +19,7 @@ RUN : "Layer 1: fully working basic GHC in /usr/local" && \
     sh get-last-layer.sh nilcons/ghc-musl-auto ghc-cross | tar xzO | tar xJ -C / && \
     : Compile the ghc binary distribution && \
     cd /tmp && \
-    curl -L https://www.haskell.org/ghc/dist/$GHC_VERSION/ghc-$GHC_VERSION-src.tar.bz2 | tar xj && \
+    curl -L https://downloads.haskell.org/~ghc/$GHC_VERSION/ghc-$GHC_VERSION_S-src.tar.bz2 | tar xj && \
     cd ghc-$GHC_VERSION && \
     cp -v /tmp/build.mk mk/build.mk && \
     PATH=/opt/ghc-cross/bin:$PATH ./configure && \
