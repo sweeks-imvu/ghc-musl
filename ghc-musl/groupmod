@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# -o --gid $3gid $4username
+
+gid=$(cat /etc/group | grep "$4" | awk -F: '{print $3;}')
+
+echo sed -i -e s/${gid}:/$3:/ /etc/group
+sed -i -e s/${gid}:/$3:/ /etc/group

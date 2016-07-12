@@ -7,6 +7,16 @@ ENV CABAL_VERSION    1.22.9.0
 
 WORKDIR /tmp
 COPY get-last-layer.sh build.mk ghc-linker-relocation.patch ./
+
+COPY groupadd /usr/sbin/groupadd
+COPY useradd /usr/sbin/useradd
+COPY usermod /usr/sbin/usermod
+COPY groupmod /usr/sbin/groupmod
+
+#RUN apk --update add bash && \
+#    /usr/sbin/groupadd -o --gid 1000 stack && \
+#    /usr/sbin/useradd -oN --uid 1000 --gid 1000 --home /tmp stack
+
 RUN : "Layer 1: fully working basic GHC in /usr/local" && \
     apk --update add curl xz alpine-sdk perl gmp-dev file gmp openssh openssl zlib-dev strace vim less jq ncurses-dev bash autoconf pcre-dev && \
     : Install patchelf && \
@@ -49,9 +59,6 @@ RUN : "Layer 2: cabal-install, but only the binary, no executables" && \
     : Clean up to keep the image small && \
     rm -rf /tmp/* /root/.ghc /root/.cabal/{lib,share}
 
-COPY groupadd /usr/sbin/groupadd
-COPY useradd /usr/sbin/useradd
-
 WORKDIR /root/.cabal
 RUN : "Layer 3: install stack" && \
     apk --update add sqlite-dev && \
@@ -63,7 +70,7 @@ RUN : "Layer 3: install stack" && \
 
 WORKDIR /
 RUN : "Layer 4: install extra packages" && \
-    apk add mariadb-dev taglib-dev curl-dev icu-dev icu taglib icu-libs
+    apk add taglib-dev curl-dev icu-dev icu taglib icu-libs python python-dev
 COPY stack.yaml /root/.stack/global/stack.yaml
 WORKDIR /
 RUN : "Layer 5: install extra stack packages" && \

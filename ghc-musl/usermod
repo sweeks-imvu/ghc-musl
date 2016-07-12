@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# -o --uid $3uid --home $5homedir $6username
+
+echo ln -snf "$5" /home/"$6"
+ln -snf "$5" /home/"$6"
+uid=$(cat /etc/passwd | grep "$6" | awk -F: '{print $3;}')
+
+echo sed -i -e s/${uid}:/$3:/ /etc/passwd
+sed -i -e s/${uid}:/$3:/ /etc/passwd
